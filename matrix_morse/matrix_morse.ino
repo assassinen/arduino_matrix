@@ -87,8 +87,9 @@ static byte letters[][8] = {
   { B00000, B00000, B00000, B11111, B00000, B00000, B00000, B00000 },//"-", 
   { B00000, B00000, B00000, B00000, B00000, B10001, B11111, B00000 },//"_", 
   { B01110, B10001, B10111, B10101, B10111, B10000, B01111, B00000 },//"@", 
-  
-  { B00000, B00100, B01000, B11111, B01000, B00100, B00000, B00000 }//"ERROR" };
+    
+  { B00000, B00100, B01000, B11111, B01000, B00100, B00000, B00000 },//"ERROR" };
+  { B00000, B00000, B00000, B00000, B00000, B00000, B00000, B00000 } //clear
 };
 //Morse code table: 1 - "dot", 2 - "dash", 0 - "error"
 const int morseCodeInt[] = {
@@ -126,6 +127,18 @@ void toLed(int letter_number) {
     digitalWrite(latchPin, LOW);
     shiftOut(dataPin, clockPin, MSBFIRST, bitsToSend);
     bitsToSend = 0xFF^letters[letter_number][whichPin];
+    shiftOut(dataPin, clockPin, MSBFIRST, bitsToSend);
+    digitalWrite(latchPin, HIGH);
+  }
+}
+
+void cleareLed() {
+  for (int whichPin = 0; whichPin < 8; whichPin++) {
+    bitsToSend = 0;
+    bitWrite(bitsToSend, whichPin, HIGH);
+    digitalWrite(latchPin, LOW);
+    shiftOut(dataPin, clockPin, MSBFIRST, bitsToSend);
+    bitsToSend = 1;
     shiftOut(dataPin, clockPin, MSBFIRST, bitsToSend);
     digitalWrite(latchPin, HIGH);
   }
@@ -180,8 +193,8 @@ void signal_processing(int last_pin_value) {
   }
 }
 
+/*
 void loop() {
-  
   pin_value = analogRead(photo_pin);
   
   if (pin_value > (change_value + last_pin_value)) {
@@ -196,4 +209,12 @@ void loop() {
   } 
   
   toLed(letter_number);
+}
+*/
+
+void loop() {
+  toLed(8);
+  delay(2);
+  //cleareLed();
+  
 }
